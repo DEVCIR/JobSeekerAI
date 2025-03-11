@@ -66,21 +66,29 @@ const Dashboard = () => {
   const checkAuth = async () => {
     // Check localStorage first
     let accessToken = localStorage.getItem('access_token')
-    const refreshToken = localStorage.getItem('refresh_token')
-
+    let refreshToken = localStorage.getItem('refresh_token')
     // If no access token in localStorage, check URL parameters
     if (!accessToken) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      accessToken = hashParams.get('access_token')
-      const refreshTokenFromUrl = hashParams.get('refresh_token')
+      // Extract the part of the URL after the first '#'
+      const hashParts = window.location.hash.substring(1).split('#')
+      const tokenParams = hashParts.length > 1 ? hashParts[1] : ''
+      const params = new URLSearchParams(tokenParams)
+  
+      accessToken = params.get('access_token')
+      refreshToken = params.get('refresh_token')
 
-      if (accessToken && refreshTokenFromUrl) {
+      console.log('Access Token from URL:', accessToken)
+      console.log('Refresh Token from URL:', refreshToken)
+
+      if (accessToken && refreshToken) {
         // Store tokens in localStorage
         localStorage.setItem('access_token', accessToken)
-        localStorage.setItem('refresh_token', refreshTokenFromUrl)
+        localStorage.setItem('refresh_token', refreshToken)
 
         // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname)
+      } else {
+        console.warn('Tokens not found in URL hash')
       }
     }
 
@@ -109,6 +117,13 @@ const Dashboard = () => {
   useEffect(() => {
     checkAuth()
   }, [navigate])
+
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    navigate('/')
+  }
 
 
   const progressExample = [
