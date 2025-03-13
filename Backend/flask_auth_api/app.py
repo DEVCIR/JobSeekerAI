@@ -58,7 +58,7 @@ GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_USERINFO_URL = "https://api.github.com/user"
 GITHUB_REDIRECT_URI = "http://localhost:5000/login/github/callback"
 
-FRONTEND_DASHBOARD_URL = "http://localhost:3000/dashboard"
+FRONTEND_DASHBOARD_URL = "http://localhost:3000/#/dashboard"
 FRONTEND_ERROR_URL = "http://localhost:3000"
 
 
@@ -429,6 +429,7 @@ def register():
         "password": hashed_password,
         "oauth_provider": []
     })  
+    
     access_token, refresh_token = create_tokens(email)
     return jsonify({
         "message": "Registered Successfully"

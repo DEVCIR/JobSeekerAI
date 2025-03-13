@@ -51,6 +51,11 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+
+// MY PAGES
+const LinkedInJob = React.lazy(() => import('../src/pages/LinkedInJobs/linkedInJobs'))
+const AtsJob = React.lazy(() => import('../src/pages/ATSJobs/atsJobs'))
+
 const routes = [
   { path: '/home', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -97,6 +102,13 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+  
+  
+  
+  // My Routes
+  { path: '/linkedIn-Jobs', name: 'LinkedIn Jobs', element: LinkedInJob },
+  { path: '/Ats-Jobs', name: 'ATS Jobs', element: AtsJob },
+
 ]
 
 export default routes

@@ -66,38 +66,44 @@ const Dashboard = () => {
   const checkAuth = async () => {
     // Check localStorage first
     let accessToken = localStorage.getItem('access_token')
-    const refreshToken = localStorage.getItem('refresh_token')
+    let refreshToken = localStorage.getItem('refresh_token')
 
-    // If no access token in localStorage, check URL parameters
+    if (accessToken && refreshToken) {
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+
     if (!accessToken) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      accessToken = hashParams.get('access_token')
-      const refreshTokenFromUrl = hashParams.get('refresh_token')
+      const hashParts = window.location.hash.substring(1).split('#')
+      const tokenParams = hashParts.length > 1 ? hashParts[1] : ''
+      const params = new URLSearchParams(tokenParams)
 
-      if (accessToken && refreshTokenFromUrl) {
-        // Store tokens in localStorage
+      accessToken = params.get('access_token')
+      refreshToken = params.get('refresh_token')
+
+      if (accessToken && refreshToken) {
         localStorage.setItem('access_token', accessToken)
-        localStorage.setItem('refresh_token', refreshTokenFromUrl)
+        localStorage.setItem('refresh_token', refreshToken)
 
         // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname)
+      } else {
+        console.warn('Tokens not found in URL hash')
       }
     }
 
-    // If no tokens found, redirect to login
-    if (!accessToken || !refreshToken) {
+    if (!accessToken && !refreshToken) {
       navigate('/')
       return
     }
 
-    // Verify token validity with backend
     try {
       const response = await api.get('/protected')
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error('Invalid token')
       }
       setIsAuthenticated(true)
     } catch (error) {
+      console.error("ERROR: ", error)
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
       navigate('/')
@@ -109,6 +115,13 @@ const Dashboard = () => {
   useEffect(() => {
     checkAuth()
   }, [navigate])
+
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    navigate('/')
+  }
 
 
   const progressExample = [
