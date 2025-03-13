@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import api from '../../../services/authService';
-import { toast } from 'sonner';
 import {
   CButton,
   CCard,
@@ -16,6 +15,9 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "sonner";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -53,7 +55,7 @@ const Register = () => {
     try {
       const response = await api.post('/register', formData);
       toast.success(response.message || 'Registration successful!');
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       toast.error(error.response?.data?.error || 'Registration failed');
     }
@@ -65,6 +67,7 @@ const Register = () => {
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+      <Toaster />
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={9} lg={7} xl={6}>

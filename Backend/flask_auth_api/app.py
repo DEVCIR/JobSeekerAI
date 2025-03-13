@@ -429,6 +429,7 @@ def register():
         "password": hashed_password,
         "oauth_provider": []
     })  
+    
     access_token, refresh_token = create_tokens(email)
     return jsonify({
         "message": "Registered Successfully"

@@ -67,21 +67,20 @@ const Dashboard = () => {
     // Check localStorage first
     let accessToken = localStorage.getItem('access_token')
     let refreshToken = localStorage.getItem('refresh_token')
-    // If no access token in localStorage, check URL parameters
+
+    if (accessToken && refreshToken) {
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+
     if (!accessToken) {
-      // Extract the part of the URL after the first '#'
       const hashParts = window.location.hash.substring(1).split('#')
       const tokenParams = hashParts.length > 1 ? hashParts[1] : ''
       const params = new URLSearchParams(tokenParams)
-  
+
       accessToken = params.get('access_token')
       refreshToken = params.get('refresh_token')
 
-      console.log('Access Token from URL:', accessToken)
-      console.log('Refresh Token from URL:', refreshToken)
-
       if (accessToken && refreshToken) {
-        // Store tokens in localStorage
         localStorage.setItem('access_token', accessToken)
         localStorage.setItem('refresh_token', refreshToken)
 
@@ -92,20 +91,19 @@ const Dashboard = () => {
       }
     }
 
-    // If no tokens found, redirect to login
-    if (!accessToken || !refreshToken) {
+    if (!accessToken && !refreshToken) {
       navigate('/')
       return
     }
 
-    // Verify token validity with backend
     try {
       const response = await api.get('/protected')
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error('Invalid token')
       }
       setIsAuthenticated(true)
     } catch (error) {
+      console.error("ERROR: ", error)
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
       navigate('/')

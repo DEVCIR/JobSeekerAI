@@ -48,6 +48,16 @@ const _nav = [
     name: 'Components',
   },
   {
+    component: CNavItem,
+    name: 'LinkedIn Jobs',
+    to: '/linkedIn-Jobs',
+  },
+  {
+    component: CNavItem,
+    name: 'ATS Jobs',
+    to: '/Ats-Jobs',
+  },
+  {
     component: CNavGroup,
     name: 'Base',
     to: '/base',
@@ -149,11 +159,6 @@ const _nav = [
         component: CNavItem,
         name: 'Spinners',
         to: '/base/spinners',
-      },
-      {
-        component: CNavItem,
-        name: 'Tables',
-        to: '/base/tables',
       },
       {
         component: CNavItem,
