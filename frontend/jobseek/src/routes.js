@@ -55,6 +55,7 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 // MY PAGES
 const LinkedInJob = React.lazy(() => import('../src/pages/LinkedInJobs/linkedInJobs'))
 const AtsJob = React.lazy(() => import('../src/pages/ATSJobs/atsJobs'))
+const BuildResume = React.lazy(() => import('../src/pages/BuildResume/buildResume'))
 
 const routes = [
   { path: '/home', exact: true, name: 'Home' },
@@ -108,6 +109,7 @@ const routes = [
   // My Routes
   { path: '/linkedIn-Jobs', name: 'LinkedIn Jobs', element: LinkedInJob },
   { path: '/Ats-Jobs', name: 'ATS Jobs', element: AtsJob },
+  { path: '/Build-Resume', name: 'Resume Build', element: BuildResume },
 
 ]
 
