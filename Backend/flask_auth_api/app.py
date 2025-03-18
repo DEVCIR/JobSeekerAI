@@ -46,7 +46,7 @@ GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
-# LinkedIn OpenID Connect URLs
+# LinkedIn URLs
 LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
 LINKEDIN_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
 LINKEDIN_OIDC_ISSUER = "https://www.linkedin.com"
@@ -62,14 +62,14 @@ FRONTEND_DASHBOARD_URL = "http://localhost:3000/#/dashboard"
 FRONTEND_ERROR_URL = "http://localhost:3000"
 
 
-# ------------------------- Modified Callback Handlers ------------------------- #
+# ------------------------- Callback Handlers ------------------------- #
 
 def create_redirect_url(access_token, refresh_token):
     return f"{FRONTEND_DASHBOARD_URL}#access_token={access_token}&refresh_token={refresh_token}"
 
 
 
-# ------------------------- Enhanced JWT Handlers ------------------------- #
+# ------------------------- JWT Handlers ------------------------- #
 
 @jwt_manager.expired_token_loader
 def expired_token_callback(jwt_header, jwt_payload):
@@ -144,7 +144,7 @@ def google_callback():
                     {"$set": {"name": name}}
                 )
             print("Updated user name for existing user with null name!")
-            # Ensure oauth_provider is a list and add Google if not present
+            # add Google if not present
             if "oauth_provider" in existing_user:
                 providers = existing_user["oauth_provider"]
                 if isinstance(providers, list):
@@ -155,21 +155,19 @@ def google_callback():
                         )
                         print("Added Google to existing user!")
                 else:
-                    # Convert single provider string to a list and add Google
                     users_collection.update_one(
                         {"email": email},
                         {"$set": {"oauth_provider": [providers, "google"]}}
                     )
                     print("Converted oauth_provider to list and added Google!")
-            else:
-                # Initialize oauth_provider as a list with Google
+            else
                 users_collection.update_one(
                     {"email": email},
                     {"$set": {"oauth_provider": ["google"]}}
                 )
                 print("Initialized oauth_provider list with Google!")
         else:
-            # Insert new user with Google in oauth_provider list
+            # Insert new user
             users_collection.insert_one({
                 "email": email,
                 "name": name,
@@ -227,7 +225,7 @@ def linkedin_callback():
         if not access_token or not id_token:
             return jsonify({"error": "Failed to retrieve access token or ID token"}), 400
 
-        # Decode ID Token securely using LinkedIn's JWKS
+        # Decode ID Token securely
         try:
             jwks_client = PyJWKClient(LINKEDIN_OIDC_JWKS_URI)
             signing_key = jwks_client.get_signing_key_from_jwt(id_token).key
@@ -248,7 +246,6 @@ def linkedin_callback():
         # Store or retrieve user from database
         existing_user = users_collection.find_one({"email": email})
         if existing_user:
-            # Update name if it's null
             if existing_user.get("name") is None:
                 users_collection.update_one(
                     {"email": email},
@@ -256,7 +253,7 @@ def linkedin_callback():
                 )
                 print("Updated user name for existing user with null name!")
 
-            # Ensure oauth_provider is a list and add LinkedIn if not present
+            # add LinkedIn if not present
             if "oauth_provider" in existing_user:
                 providers = existing_user["oauth_provider"]
                 if isinstance(providers, list):
@@ -267,21 +264,19 @@ def linkedin_callback():
                         )
                         print("Added LinkedIn to existing user!")
                 else:
-                    # Convert single provider string to a list and add LinkedIn
                     users_collection.update_one(
                         {"email": email},
                         {"$set": {"oauth_provider": [providers, "linkedin"]}}
                     )
                     print("Converted oauth_provider to list and added LinkedIn!")
             else:
-                # Initialize oauth_provider as a list with LinkedIn
                 users_collection.update_one(
                     {"email": email},
                     {"$set": {"oauth_provider": ["linkedin"]}}
                 )
                 print("Initialized oauth_provider list with LinkedIn!")
         else:
-            # Insert new user with LinkedIn in oauth_provider list
+            # Insert new user
             users_collection.insert_one({
                 "email": email,
                 "name": name,
@@ -321,7 +316,7 @@ def github_callback():
         return redirect(f"{FRONTEND_ERROR_URL}?message=Missing authorization code") 
 
     try:
-        # Exchange code for access token
+        #code for access token
         token_data = {
             "client_id": GITHUB_CLIENT_ID,
             "client_secret": GITHUB_CLIENT_SECRET,
@@ -341,7 +336,7 @@ def github_callback():
         email = user_info.get("email")
         name = user_info.get("name", "")
 
-        # 🔍 GitHub hides email by default, so fetch emails explicitly
+        # GitHub hides email by default so fetch emails explicitly
         if not email:
             emails_response = requests.get("https://api.github.com/user/emails", headers=user_headers).json()
             for email_obj in emails_response:
@@ -358,7 +353,6 @@ def github_callback():
         print(f"Existing User: {existing_user}")
 
         if existing_user:
-            # Update name if it's null
             if existing_user.get("name") is None:
                 users_collection.update_one(
                     {"email": email},
@@ -366,7 +360,6 @@ def github_callback():
                 )
                 print("Updated user name for existing user with null name!")
 
-            # Ensure oauth_provider is a list and add GitHub if not present
             if "oauth_provider" in existing_user:
                 providers = existing_user["oauth_provider"]
                 if isinstance(providers, list):
@@ -377,21 +370,19 @@ def github_callback():
                         )
                         print("Added GitHub to existing user!")
                 else:
-                    # Convert single provider string to a list and add GitHub
                     users_collection.update_one(
                         {"email": email},
                         {"$set": {"oauth_provider": [providers, "github"]}}
                     )
                     print("Converted oauth_provider to list and added GitHub!")
             else:
-                # Initialize oauth_provider as a list with GitHub
                 users_collection.update_one(
                     {"email": email},
                     {"$set": {"oauth_provider": ["github"]}}
                 )
                 print("Initialized oauth_provider list with GitHub!")
         else:
-            # Insert new user with GitHub in oauth_provider list
+            # Insert new user
             users_collection.insert_one({
                 "email": email,
                 "name": name,
